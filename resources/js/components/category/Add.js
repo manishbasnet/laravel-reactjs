@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import SuccessAlert from './SuccessAlert';
+import ErrorAlert from './ErrorAlert';
 
 export default class Add extends Component {
 
@@ -9,7 +11,8 @@ export default class Add extends Component {
         this.onChangeCategoryName = this.onChangeCategoryName.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.state={
-            category_name:''
+            category_name:'',
+            alert_message:''
         }
     }
 
@@ -26,14 +29,21 @@ export default class Add extends Component {
             category_name : this.state.category_name
         }
 
-        axios.post('http://localhost:9000/category/store',category)
-            .then(res=>Console.log(res.data));
+        axios.post('http://localhost:9000/api/category/store',category)
+            .then(res=>{
+                this.setState({alert_message:"success"})
+            }).catch(error=>{
+            this.setState({alert_message:"error"});
+        });
     }
 
 
     render() {
         return (
             <div>
+                <hr />
+                {this.state.alert_message=="success"?<SuccessAlert message={"Category added successfully."} />:null}
+                {this.state.alert_message=="error"?<ErrorAlert message={"Error occurred while adding the category."} />:null}
               <form onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <label htmlFor="category_name">Category Name</label>

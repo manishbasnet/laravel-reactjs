@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from "axios/index";
+import SuccessAlert from './SuccessAlert';
+import ErrorAlert from './ErrorAlert';
 
 export default class Edit extends Component {
 
@@ -9,13 +11,14 @@ export default class Edit extends Component {
         this.onChangeCategoryName = this.onChangeCategoryName.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.state={
-            category_name:''
+            category_name:'',
+            alert_message:''
         }
     }
 
     componentDidMount()
     {
-        axios.get('http://localhost:9000/category/edit/'+this.props.match.params.id)
+        axios.get('http://localhost:9000/api/category/edit/'+this.props.match.params.id)
             .then(response=>{
                 this.setState({category_name:response.data.name});
             });
@@ -34,14 +37,21 @@ export default class Edit extends Component {
             category_name : this.state.category_name
         }
 
-        axios.put('http://localhost:9000/category/update/'+this.props.match.params.id,category)
-            .then(res=>Console.log(res.data));
+        axios.put('http://localhost:9000/api/category/update/'+this.props.match.params.id,category)
+            .then(res=>{
+                this.setState({alert_message:"success"})
+            }).catch(error=>{
+                this.setState({alert_message:"error"});
+        });
     }
 
 
     render() {
         return (
             <div>
+                <hr />
+                {this.state.alert_message=="success"?<SuccessAlert message={"Category updated successfully."} />:null}
+                {this.state.alert_message=="error"?<ErrorAlert message={"Error occurred while updating the category."} />:null}
               <form onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <label htmlFor="category_name">Category Name</label>

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import {BrowserRouter as Router, Link, Route} from 'react-router-dom';
+import {Link, Route, Switch} from 'react-router-dom';
 import Home from './Home';
 import About from './About';
 import Category from './category/Index';
+import Error404 from './Error404';
 
 export default class Header extends Component {
     render() {
         return (
-          <Router>
             <div>
 
 
@@ -34,12 +34,19 @@ export default class Header extends Component {
             </form>
             </div>
             </nav>
-              <Route exact path='/' component={Home} />
-              <Route exact path='/about' component={About} />
-              <Route exact path='/category' component={Category} />
-
+                <div className='row'>
+                    <div className='col-md-12'>
+                        <Switch>
+                          <Route exact path='/' component={Home} />
+                          <Route exact path='/about' component={About} />
+                          <Route exact path='/category' component={Category} />
+                          <Route exact path='/category/add' component={Category} />
+                          <Route exact path='/category/edit/:id' component={Category} />
+                          <Route exact path='/*' component={Error404} />
+                        </Switch>
+                    </div>
+                </div>
             </div>
-          </Router>
         );
     }
 }

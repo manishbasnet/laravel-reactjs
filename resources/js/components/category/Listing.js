@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import {Link} from 'react-router-dom';
 import Pagination from 'react-js-pagination';
+import SuccessAlert from './SuccessAlert';
+import ErrorAlert from './ErrorAlert';
 
 export default class Listing extends Component {
 
@@ -13,14 +15,15 @@ export default class Listing extends Component {
       activePage:1,
       itemsCountPerPage:1,
       totalItemsCount:1,
-      pageRangeDisplayed:3
+      pageRangeDisplayed:3,
+      alert_message:''
     }
     this.handlePageChange=this.handlePageChange.bind(this);
   }
 
   componentDidMount()
   {
-    axios.get('http://localhost:9000/category')
+    axios.get('http://localhost:9000/api/category')
     .then(response=>{
       this.setState({
           categories:response.data.data,
@@ -34,7 +37,7 @@ export default class Listing extends Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         //this.setState({activePage: pageNumber});
-        axios.get('http://localhost:9000/category?page='+pageNumber)
+        axios.get('http://localhost:9000/api/category?page='+pageNumber)
             .then(response=>{
                 this.setState({
                     categories:response.data.data,
@@ -47,7 +50,7 @@ export default class Listing extends Component {
 
   onDelete(category_id)
   {
-    axios.delete('http://localhost:9000/category/delete/'+category_id)
+    axios.delete('http://localhost:9000/api/category/delete/'+category_id)
         .then(response=>{
 
           var categories = this.state.categories;
@@ -60,13 +63,18 @@ export default class Listing extends Component {
               this.setState({categories:categories});
             }
           }
-
-        });
+          this.setState({alert_message:"success"})
+            }).catch(error=>{
+                this.setState({alert_message:"error"});
+            });
   }
 
     render() {
         return (
             <div>
+                <hr />
+                {this.state.alert_message=="success"?<SuccessAlert message={"Category deleted successfully."} />:null}
+                {this.state.alert_message=="error"?<ErrorAlert message={"Error occurred while deleting the category."} />:null}
             <table className="table">
               <thead>
               <tr>
@@ -82,7 +90,7 @@ export default class Listing extends Component {
                 {
                   this.state.categories.map(category=>{
                     return (
-                          <tr>
+                          <tr key={category.id}>
                             <th scope="row">{category.id}</th>
                             <td>{category.name}</td>
                             <td>{category.active==1?("Active"):("InActive")}</td>
@@ -99,7 +107,7 @@ export default class Listing extends Component {
               </tbody>
               </table>
 
-                <div class="d-flex justify-content-center">
+                <div className="d-flex justify-content-center">
                     <Pagination
                         activePage={this.state.activePage}
                         itemsCountPerPage={this.state.itemsCountPerPage}

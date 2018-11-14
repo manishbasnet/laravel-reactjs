@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import {Link} from 'react-router-dom';
 
 export default class Listing extends Component {
 
@@ -19,6 +20,25 @@ export default class Listing extends Component {
     });
   }
 
+  onDelete(category_id)
+  {
+    axios.delete('http://localhost:9000/category/delete/'+category_id)
+        .then(response=>{
+
+          var categories = this.state.categories;
+
+          for(var i=0; i< categories.length; i++)
+          {
+            if(categories[i].id == category_id)
+            {
+              categories.splice(i,1);
+              this.setState({categories:categories});
+            }
+          }
+
+        });
+  }
+
     render() {
         return (
             <div>
@@ -30,6 +50,7 @@ export default class Listing extends Component {
                 <th scope="col">Status</th>
                 <th scope="col">Created At </th>
                 <th scope="col">Updated At </th>
+                <th scope="col">Action </th>
               </tr>
               </thead>
               <tbody>
@@ -42,6 +63,10 @@ export default class Listing extends Component {
                             <td>{category.active==1?("Active"):("InActive")}</td>
                             <td>{category.created_at}</td>
                             <td>{category.updated_at}</td>
+                            <td>
+                                <Link to={`/category/edit/${category.id}`}>Edit</Link>&nbsp; |  &nbsp;
+                              <a href="#" onClick={this.onDelete.bind(this,category.id)}>Delete</a>
+                            </td>
                           </tr>
                         )
                     })

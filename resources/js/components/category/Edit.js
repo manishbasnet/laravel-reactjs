@@ -1,16 +1,24 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import axios from "axios/index";
 
-export default class Add extends Component {
+export default class Edit extends Component {
 
-    constructor()
+    constructor(props)
     {
-        super();
+        super(props);
         this.onChangeCategoryName = this.onChangeCategoryName.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.state={
             category_name:''
         }
+    }
+
+    componentDidMount()
+    {
+        axios.get('http://localhost:9000/category/edit/'+this.props.match.params.id)
+            .then(response=>{
+                this.setState({category_name:response.data.name});
+            });
     }
 
     onChangeCategoryName(e){
@@ -26,7 +34,7 @@ export default class Add extends Component {
             category_name : this.state.category_name
         }
 
-        axios.post('http://localhost:9000/category/store',category)
+        axios.put('http://localhost:9000/category/update/'+this.props.match.params.id,category)
             .then(res=>Console.log(res.data));
     }
 
